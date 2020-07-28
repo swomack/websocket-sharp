@@ -119,24 +119,23 @@ namespace WebSocketSharp
         private async Task<WebSocketFrameHeader> ReadHeader(CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
-            var header = new byte[2];
+            byte[] header;
 
-            var headerLength = 0;
             try
             {
-                headerLength = await _innerStream.ReadAsync(header, 0, 2, cancellationToken).ConfigureAwait(false);
+                header = await _innerStream.ReadBytes(2).ConfigureAwait(false);
             }
             catch (IOException)
             {
                 return null;
             }
 
-            if (headerLength == 0)
+            if (header.Length == 0)
             {
                 return null;
             }
 
-            if (headerLength != 2)
+            if (header.Length != 2)
             {
                 throw new WebSocketException("The header part of a frame cannot be read from the data source.");
             }
